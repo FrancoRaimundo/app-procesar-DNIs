@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DNI → PDF (local)</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>DNI → PDF (local)</h1>
+      <p class="sub">
+        Seleccioná la carpeta con las imágenes nombradas como <code>123_FRENTE.jpg</code>, <code>123_DORSO.png</code>.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="controls">
+        <div class="control-group">
+          <button id="btnPickFolder" class="btn">Seleccionar carpeta</button>
+          <input id="folderInput" type="file" multiple webkitdirectory accept="image/jpeg,image/png" hidden />
+          <button id="btnReset" class="btn btn-ghost" disabled>Reiniciar</button>
+        </div>
+
+        <div class="control-group">
+          <label class="label">
+            Modo PDF
+            <select id="pdfMode" class="select">
+              <option value="single">1 página (FRENTE arriba / DORSO abajo)</option>
+              <option value="double">2 páginas (FRENTE / DORSO)</option>
+            </select>
+          </label>
+
+          <label class="label">
+            Ajuste imagen
+            <select id="fitMode" class="select">
+              <option value="contain">Contener (sin recorte)</option>
+              <option value="cover">Cubrir (recorta, sin invadir la otra mitad)</option>
+            </select>
+          </label>
+
+          <label class="label">
+            Concurrencia
+            <select id="concurrency" class="select">
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label class="checkbox">
+            <input type="checkbox" id="processDuplicates" />
+            Procesar duplicados (usando la selección elegida)
+          </label>
+        </div>
+
+        <div class="control-group">
+          <button id="btnGenerate" class="btn btn-primary" disabled>Generar PDFs</button>
+          <button id="btnDownloadZip" class="btn btn-success" disabled>Descargar ZIP</button>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <div class="kpi">
+          <div class="kpi-label">Total IDs</div>
+          <div class="kpi-value" id="kpiTotal">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Listos</div>
+          <div class="kpi-value" id="kpiReady">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Faltantes</div>
+          <div class="kpi-value" id="kpiMissing">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Duplicados</div>
+          <div class="kpi-value" id="kpiDup">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Ignorados</div>
+          <div class="kpi-value" id="kpiIgnored">0</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="progressText">Sin procesar</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="note" id="browserNote" hidden>
+        <strong>Nota:</strong> La selección de carpeta (<code>webkitdirectory</code>) funciona mejor en Chrome/Edge.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-head">
+        <h2>Tabla de participantes</h2>
+        <div class="legend">
+          <span class="pill pill-ready">Listo</span>
+          <span class="pill pill-missing">Faltante</span>
+          <span class="pill pill-dup">Duplicado</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="pairsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>FRENTE</th>
+              <th>DORSO</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="pairsTbody">
+            <tr><td colspan="4" class="muted">Todavía no seleccionaste una carpeta.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Log</h2>
+      <pre class="log" id="log"></pre>
+    </section>
+  </main>
+
+  <!-- Dependencias: PDF-lib + JSZip -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script src="./app.js"></script>
+</body>
+</html>
